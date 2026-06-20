@@ -1,21 +1,35 @@
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
-
 import express from 'express';
 import * as path from 'path';
 
+import { createTaskModule } from './modules/task/task.module';
+import { errorHandlerMiddleware } from './shared/middlewares/error-handler.middleware';
+import { createAuditLogModule } from './modules/audit-log/audit-log.module';
+
 const app = express();
 
+app.use(express.json());
+
+// ── Static Assets ────────────────────────────────────────────────────
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
-app.get('/api', (req, res) => {
-  res.send({ message: 'Welcome to backend!' });
+// ── Health Check ─────────────────────────────────────────────────────
+app.get('/health', (_req, res) => {
+  res.status(200).json({ status: 'ok' });
 });
+
+// ── Module Registration ──────────────────────────────────────────────
+const auditLogModule = createAuditLogModule();
+
+const taskModule = createTaskModule({
+  auditLogClient: auditLogModule.client,
+});
+app.use('/api/tasks', taskModule.router);
+
+// ── Error Handler ────────────────────────────────────────────────────
+app.use(errorHandlerMiddleware);
 
 const port = process.env.PORT || 3333;
 const server = app.listen(port, () => {
-  console.log(`Listening at http://localhost:${port}/api`);
+  console.log(`Listening at http://localhost:${port}`);
 });
 server.on('error', console.error);
