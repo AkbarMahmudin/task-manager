@@ -14,7 +14,7 @@ Aplikasi internal untuk mengelola task sederhana dengan audit log perubahan stat
 ### 1. Clone & Install Dependencies
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/AkbarMahmudin/task-manager.git
 cd task-manager
 
 # Install semua dependencies dari root (berlaku untuk semua apps & libs)
@@ -28,7 +28,7 @@ npm install
 npx nx serve backend
 
 # Backend akan berjalan di:
-# http://localhost:3000
+# http://localhost:3000/api
 ```
 
 ### 3. Setup Environment Frontend
@@ -42,7 +42,7 @@ cp .env.example .env
 `.env.example`:
 
 ```
-VITE_API_URL=http://localhost:3000
+VITE_API_URL=http://localhost:3000/api
 ```
 
 ### 4. Jalankan Frontend
@@ -71,7 +71,7 @@ curl http://localhost:3000/health
 | GET    | `/tasks`                | List semua task         |
 | GET    | `/tasks/:id`            | Detail satu task        |
 | POST   | `/tasks`                | Buat task baru          |
-| PUT    | `/tasks/:id/status`     | Update status task      |
+| PATCH  | `/tasks/:id/status`     | Update status task      |
 | DELETE | `/tasks/:id`            | Hapus task              |
 | GET    | `/tasks/:id/audit-logs` | List audit log per task |
 
@@ -84,7 +84,7 @@ curl -X POST http://localhost:3000/tasks \
   -d '{ "title": "Prepare Invoice", "description": "Q4 invoice untuk client A" }'
 
 # Update status
-curl -X PUT http://localhost:3000/tasks/<id>/status \
+curl -X PATCH http://localhost:3000/tasks/<id>/status \
   -H "Content-Type: application/json" \
   -d '{ "newStatus": "pending", "actor": "john.doe" }'
 
