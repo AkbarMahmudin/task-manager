@@ -1,6 +1,11 @@
 {
   "extends": "./tsconfig.base.json",
   "compileOnSave": false,
+  "compilerOptions": {
+    "noEmit": true,
+    "moduleResolution": "bundler",
+    "resolvePackageJsonImports": true
+  },
   "files": [],
   "references": [
     {
@@ -8,6 +13,12 @@
     },
     {
       "path": "./libs/shared-types"
+    },
+    {
+      "path": "./apps/frontend"
+    },
+    {
+      "path": "./libs/ui"
     }
   ]
 }
