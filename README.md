@@ -55,7 +55,12 @@ npx nx serve frontend
 # http://localhost:5173
 ```
 
-> Jalankan backend dan frontend **sekaligus** di dua terminal terpisah. Frontend memanggil backend di `VITE_API_URL`.
+> Jalankan backend dan frontend **sekaligus** di dua terminal terpisah atau gunakan perintah di bawah.
+
+```bash
+# Jalankan kedua aplikasi sekaligus
+npx nx run-many -t serve
+```
 
 ### 5. Health Check Backend
 
@@ -514,6 +519,41 @@ Urutan berdasarkan impact tertinggi terlebih dahulu:
 - Aktifkan routing dan pisahkan halaman detail task jika fitur berkembang
 
 ---
+
+## Penggunaan AI
+
+AI digunakan secara ekstensif dalam project ini — mulai dari perencanaan arsitektur, penentuan struktur folder, penulisan interface, hingga drafting README ini sendiri.
+
+### Apa yang dibantu AI:
+
+- Menyusun dan memverbalisasi keputusan arsitektur (layered architecture, Port & Adapter, manual DI)
+- Mendraft interface dan template kode per layer
+- Membantu menjaga konsistensi penamaan dan pola across seluruh codebase
+- Merumuskan trade-off dan asumsi dalam bahasa yang terstruktur
+
+### Apa yang tidak bisa digantikan AI:
+
+AI tidak tahu konteks bisnis spesifik, tidak bisa memvalidasi bahwa output-nya benar dan tidak bertanggung jawab atas hasilnya. Semua keputusan tetap harus dipahami dan dipertahankan oleh yang menulisnya.
+
+### Bagaimana saya memvalidasinya:
+
+Pertama, saya mampu menjelaskan setiap keputusan dari prinsip dasarnya — bukan hafalan. Kalau ada yang bertanya "kenapa IAuditLogRepository tidak extend IBaseRepository?", jawabannya bukan karena AI bilang begitu, tapi karena Interface Segregation Principle dan audit log bersifat append-only by design.
+
+Kedua, saya melakukan cross-check konsistensi secara manual:
+
+```bash
+Apakah setiap interface punya concrete class yang implement-nya? ✅
+Apakah dependency hanya mengalir satu arah (tidak ada circular)? ✅
+Apakah shared-types tidak import dari backend atau frontend? ✅
+Apakah wiring DI hanya ada di module files dan main.ts? ✅
+Apakah query key hierarchy React Query konsisten dengan invalidasi? ✅
+```
+
+Ketiga, saya bisa men-trace alur data end-to-end dari HTTP request sampai ke store dan kembali ke UI — tanpa melihat catatan. Itu standar validasi saya: kalau tidak bisa jelaskan tanpa bantuan, berarti belum benar-benar dipahami.
+
+### Sikap saya terhadap AI dalam konteks ini:
+
+AI adalah alat untuk mempercepat eksternalisasi pemikiran dan menjaga konsistensi dokumentasi. Bukan pengganti pemahaman. Kalau saya tidak bisa mempertahankan setiap keputusan dalam sesi review, maka penggunaan AI tidak memberikan nilai — hanya memberikan ilusi produktivitas. Dalam proses belajarpun saya tidak mengizinkan AI untuk menulis kode langsung kedalam project agar tidak membuat pemahaman saya tumpul karena pemanfaatan AI.
 
 ## Tech Stack
 
