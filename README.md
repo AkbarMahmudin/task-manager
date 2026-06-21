@@ -31,7 +31,33 @@ npx nx serve backend
 # http://localhost:3000
 ```
 
-### 3. Health Check
+### 3. Setup Environment Frontend
+
+Buat file `.env` di root workspace sebelum menjalankan frontend:
+
+```bash
+cp .env.example .env
+```
+
+`.env.example`:
+
+```
+VITE_API_URL=http://localhost:3000
+```
+
+### 4. Jalankan Frontend
+
+```bash
+# Development mode (watch) — jalankan di terminal terpisah dari backend
+npx nx serve frontend
+
+# Frontend akan berjalan di:
+# http://localhost:5173
+```
+
+> Jalankan backend dan frontend **sekaligus** di dua terminal terpisah. Frontend memanggil backend di `VITE_API_URL`.
+
+### 5. Health Check Backend
 
 ```bash
 curl http://localhost:3000/health
@@ -89,31 +115,69 @@ Transisi hanya boleh maju satu langkah. Tidak bisa skip atau mundur.
 ```
 task-manager/
 ├── apps/
-│   └── backend/              # Express + TypeScript
+│   ├── backend/              # Express + TypeScript
+│   │   └── src/
+│   │       ├── modules/
+│   │       │   ├── task/            # Task module
+│   │       │   │   ├── repositories/ # Data access (in-memory)
+│   │       │   │   ├── services/     # Business logic
+│   │       │   │   ├── controllers/  # HTTP layer
+│   │       │   │   └── routes/       # Express router
+│   │       │   └── audit-log/       # AuditLog module (independen)
+│   │       │       ├── repositories/
+│   │       │       └── services/
+│   │       │           └── audit-log.client.ts  # Adapter — implements IAuditLogClient
+│   │       └── shared/
+│   │           ├── clients/          # Outgoing port interfaces (Port & Adapter)
+│   │           │   └── audit-log.client.interface.ts
+│   │           ├── errors/           # BaseError, DomainError
+│   │           └── middlewares/      # validateBody, errorHandler
+│   │
+│   └── frontend/             # React + TypeScript + Vite
 │       └── src/
-│           ├── modules/
-│           │   ├── task/            # Task module
-│           │   │   ├── repositories/ # Data access (in-memory)
-│           │   │   ├── services/     # Business logic
-│           │   │   ├── controllers/  # HTTP layer
-│           │   │   └── routes/       # Express router
-│           │   └── audit-log/       # AuditLog module (independen)
-│           │       ├── repositories/
-│           │       └── services/
-│           │           └── audit-log.client.ts  # Adapter — implements IAuditLogClient
-│           └── shared/
-│               ├── clients/          # Outgoing port interfaces (Port & Adapter)
-│               │   └── audit-log.client.interface.ts
-│               ├── errors/           # BaseError, DomainError
-│               └── middlewares/      # validateBody, errorHandler
+│           ├── api/                  # Layer 1: HTTP contracts
+│           │   ├── client.ts         # Axios instance + error normalization
+│           │   ├── errors.ts         # AppError class + isAppError helper
+│           │   └── task.api.ts      # Typed API functions per endpoint
+│           ├── hooks/                # Layer 2: Server state (React Query)
+│           │   ├── use-task.ts      # Task queries & mutations
+│           │   └── use-audit-log.ts # Audit log query
+│           ├── features/
+│           │   └── task/            # Layer 3: UI feature
+│           │       ├── components/
+│           │       │   ├── AuditLogDrawer.tsx
+│           │       │   ├── CreateTaskForm.tsx
+│           │       │   ├── DeleteTaskButton.tsx
+│           │       │   ├── TaskDetailButton.tsx
+│           │       │   ├── TaskItem.tsx
+│           │       │   ├── TaskList.tsx
+│           │       │   ├── TaskStatusBadge.tsx
+│           │       │   └── UpdateStatusDialog.tsx
+│           │       ├── types         # Typed Props Components
+│           │       └── index.ts      # Export TaskPage saja
+│           ├── pages/
+│           │   └── TaskPages.tsx            # Smart — pegang hooks & state
+│           ├── providers/
+│           │   └── app-providers.tsx # QueryClient + BrowserRouter
+│           ├── styles/
+│           │   └── globals.css       # Tailwind v4 + shadcn CSS variables
+│           ├── App.tsx               # Root component (siap terima Routes)
+│           └── main.tsx              # Entry point
 │
 └── libs/
-    └── shared-types/         # Types, Zod schemas
-        └── src/lib/
-            ├── task.types.ts         # Constants (TASK_STATUS_ORDER, PREDEFINED_ACTORS)
-            ├── task.schemas.ts       # Zod schemas + derived TypeScript types
-            ├── audit-log.types.ts    # AuditLog interface
-            └── api.types.ts          # ApiResponse, ApiError
+    ├── shared-types/         # Types & Zod schemas (dikonsumsi FE dan BE)
+    │   └── src/lib/
+    │       ├── task.types.ts         # Constants (TASK_STATUS_ORDER, PREDEFINED_ACTORS)
+    │       ├── task.schemas.ts       # Zod schemas + derived TypeScript types
+    │       ├── audit-log.types.ts    # AuditLog interface
+    │       └── api.types.ts          # ApiResponse, ApiError
+    │
+    └── ui/                   # shadcn/ui components (dikonsumsi frontend)
+        └── src/
+            ├── components/           # shadcn components (Button, Dialog, Sheet, dll)
+            ├── lib/
+            │   └── utils.ts          # cn() helper (clsx + tailwind-merge)
+            └── index.ts              # Public API lib
 ```
 
 ### Layered Architecture (per module)
@@ -168,7 +232,7 @@ Task module hanya tahu `IAuditLogClient` — tidak tahu `AuditLogClient` ada, ti
 
 ### Dependency Inversion
 
-Semua layer bergantung ke interface, bukan concrete class. Concrete class hanya disebutkan satu kali di `task.module.ts` dan `main.ts`.
+Semua layer bergantung ke interface, bukan concrete class. Concrete class hanya disebutkan satu kali di `tasks.module.ts` dan `main.ts`.
 
 ```
 Controller      →  ITaskService
@@ -177,7 +241,49 @@ AuditLogClient  →  IAuditLogRepository
 Repository      →  (implementasi konkret, tidak ada dependency ke layer atas)
 ```
 
-Concrete class hanya disebutkan satu kali: di `task.module.ts`, `audit-log.module.ts`, dan `main.ts`.
+Concrete class hanya disebutkan satu kali: di `tasks.module.ts`, `audit-log.module.ts`, dan `main.ts`.
+
+---
+
+### Frontend Layer Architecture
+
+```
+main.tsx
+  └── <AppProviders>                    ← QueryClient + BrowserRouter
+        └── <App />                     ← root, siap terima <Routes>
+              └── <TaskPage />    ← satu-satunya yang pegang hooks
+                    ├── useQuery  → api function → axios → BE
+                    ├── useMutation → api function → axios → BE
+                    └── passes data/callbacks ke komponen presentasi
+```
+
+Tiga layer frontend, masing-masing punya satu tanggung jawab:
+
+| Layer        | Lokasi          | Tanggung Jawab                                                             |
+| ------------ | --------------- | -------------------------------------------------------------------------- |
+| **API**      | `src/api/`      | Kirim HTTP request, unwrap `ApiResponse<T>`, normalize error ke `AppError` |
+| **Hooks**    | `src/hooks/`    | Cache server state, invalidasi cache, expose loading & error state         |
+| **Features** | `src/features/` | Render UI, handle interaksi user, tidak tahu URL atau cache                |
+
+Aturan dependency antar layer — hanya boleh ke bawah, tidak boleh ke atas:
+
+```
+features/  →  hooks/  →  api/  →  @task-manager/shared-types
+                                         ↑
+                          libs/ui  ───────┘ (untuk komponen UI)
+```
+
+### Error Normalization (Frontend)
+
+Axios error dinormalize menjadi `AppError` di interceptor sebelum sampai ke hooks atau komponen:
+
+```
+Backend ApiError  →  interceptor  →  AppError (code + statusCode + message)
+Network error     →  interceptor  →  AppError (code: VALIDATION_ERROR, statusCode: 0)
+Unknown error     →  interceptor  →  AppError (fallback message)
+```
+
+Hooks dan komponen hanya perlu handle satu jenis error (`AppError`) — tidak perlu tahu axios ada.
 
 ---
 
@@ -201,6 +307,18 @@ Ketika task dihapus, audit log-nya tetap tersimpan di memory (tidak ikut dihapus
 **Idempotent Update**
 Update ke status yang sama dianggap sebagai kesalahan eksplisit — bukan silent success. Response mengembalikan `422 IDEMPOTENT_UPDATE` agar client tahu request-nya tidak menghasilkan perubahan.
 
+**Actor di Frontend**
+Daftar actor (`PREDEFINED_ACTORS`) diimport langsung dari `@task-manager/shared-types` untuk populate dropdown — bukan di-fetch dari API. Perubahan daftar actor cukup dilakukan di satu tempat dan otomatis berlaku di FE dan BE.
+
+**Form Library**
+Pada `CreateTaskForm` menggunakan `react-hook-form`. Form library bertujuan untuk menyederhanakan validasi dengan memanfaatkan global types/schema di `@task-manager/shared-types`. Validasi dilakukan menggunakan Zod schema yang sama dari `shared-types`.
+
+**Routing**
+`BrowserRouter` sudah terpasang di `AppProviders`, tapi `<Routes>` baru mendefinisikan `TaskPage` saja. Semua fitur saat ini diakses dari satu halaman via `TaskPage`. Routing bisa ditambahkan tanpa mengubah provider atau komponen yang sudah ada.
+
+**`staleTime` Audit Log**
+`useAuditLogs` menggunakan `staleTime: Infinity` — log tidak pernah di-refetch otomatis. Ini intentional karena log hanya berubah ketika `useUpdateTaskStatus` berhasil, dan invalidasi dilakukan secara manual di `onSuccess`. Background refetch untuk log dianggap tidak perlu dan buang bandwidth.
+
 ---
 
 ## Trade-off yang Dibuat
@@ -223,7 +341,7 @@ Solusi proper membutuhkan database transaction yang wrap kedua operasi. Untuk sc
 Tidak ada database constraint yang mencegah modifikasi log secara fisik. Jaminan immutability berasal dari:
 
 - `IAuditLogRepository` tidak punya method `update()` atau `delete()`
-- Tidak ada HTTP endpoint `PUT/DELETE` untuk audit log
+- Tidak ada HTTP endpoint `PATCH/PUT/DELETE` untuk audit log
 - `AuditLog` type menggunakan `Readonly<T>`
 
 Ini cukup untuk mencegah kesalahan tidak disengaja, tapi tidak cukup untuk mencegah manipulasi langsung ke store. Solusi proper: database dengan `REVOKE UPDATE, DELETE ON audit_logs FROM app_user`.
@@ -236,6 +354,46 @@ Ini cukup untuk mencegah kesalahan tidak disengaja, tapi tidak cukup untuk mence
 - Akses ke historical data (log tetap tersimpan tapi tidak bisa diakses via API)
 
 Untuk scope internal tool, ini dianggap acceptable.
+
+### 4. `ApiResponse<T>` Unwrap di API Layer, Bukan Interceptor
+
+Semua response dari backend dibungkus dalam `ApiResponse<T>`. Unwrap bisa dilakukan di dua tempat:
+
+```
+Opsi A (dipilih) — unwrap eksplisit di setiap api function:
+  const res = await apiClient.get<ApiResponse<Task[]>>('/tasks');
+  return res.data.data;
+
+Opsi B — unwrap otomatis di response interceptor:
+  interceptor: return response.data.data
+  api function: return res.data  ← TypeScript tidak bisa infer ini dengan benar
+```
+
+Opsi A dipilih karena TypeScript generic inference bekerja lebih baik — setiap function punya return type yang eksplisit dan bisa di-trace. Interceptor yang melakukan unwrap membuat type chain menjadi ambigu dan menyulitkan debugging.
+
+### 5. `useUpdateTaskStatus` — `taskId` di Variables, Bukan Parameter Hook
+
+```typescript
+// ❌ taskId di parameter hook:
+const mutation = useUpdateTaskStatus(taskId);
+// Harus buat instance baru per task — tidak bisa di-share di TaskPage
+
+// ✅ taskId di variables (dipilih):
+const mutation = useUpdateTaskStatus();
+mutation.mutate({ taskId, data });
+// Satu instance, bisa dipakai untuk task manapun di list
+```
+
+Karena `TaskPage` me-render satu mutation untuk seluruh list (bukan per-task), taskId perlu masuk sebagai bagian dari data yang dimutasi — bukan dikunci saat hook dibuat.
+
+### 6. `selectedTaskId` Diangkat ke `TaskPage`, Bukan Lokal di `TaskItem`
+
+State "task mana yang audit log-nya terbuka" perlu berada di `TaskPage` karena dua alasan:
+
+- `useAuditLogs(selectedTaskId)` dipanggil di container — hook butuh tahu `selectedTaskId`
+- Hanya satu audit log sheet yang boleh terbuka sekaligus — logika ini tidak bisa ada di `TaskItem` individual
+
+Trade-off: `TaskItem` menerima `isSelected` dan `onSelectTask` sebagai props — sedikit lebih verbose, tapi state ownership menjadi jelas.
 
 ---
 
@@ -349,15 +507,26 @@ Urutan berdasarkan impact tertinggi terlebih dahulu:
 - Structured logging (JSON) dengan level (info, warn, error)
 - Tambah `GET /tasks/:id/audit-logs` dengan pagination — kalau task hidup lama, log bisa sangat banyak
 
+**Frontend**
+
+- Tambah toast notification (shadcn `Sonner`) untuk feedback sukses/gagal operasi — saat ini tidak ada feedback visual setelah mutasi
+- Tambah optimistic update di `useUpdateTaskStatus` — update UI sebelum response BE datang agar terasa lebih responsif
+- Aktifkan routing dan pisahkan halaman detail task jika fitur berkembang
+
 ---
 
 ## Tech Stack
 
-| Layer                      | Technology                       |
-| -------------------------- | -------------------------------- |
-| Monorepo                   | NX                               |
-| Backend                    | Node.js + Express + TypeScript   |
-| Validation                 | Zod (shared antara FE dan BE)    |
-| Storage                    | In-Memory (Map + Array)          |
-| Inter-Module Communication | Port & Adapter (IAuditLogClient) |
-| Type Safety                | TypeScript strict mode           |
+| Layer                      | Technology                                       |
+| -------------------------- | ------------------------------------------------ |
+| Monorepo                   | NX                                               |
+| Backend                    | Node.js + Express + TypeScript                   |
+| Frontend                   | React + TypeScript + Vite                        |
+| UI Framework               | Tailwind CSS v4 + shadcn/ui                      |
+| Server State               | TanStack React Query v5                          |
+| HTTP Client                | Axios                                            |
+| Routing                    | React Router v6 (terpasang, belum aktif)         |
+| Validation                 | Zod — shared antara FE dan BE via `shared-types` |
+| Storage                    | In-Memory (Map + Array)                          |
+| Inter-Module Communication | Port & Adapter (IAuditLogClient)                 |
+| Type Safety                | TypeScript strict mode                           |

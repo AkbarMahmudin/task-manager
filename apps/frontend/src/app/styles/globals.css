@@ -5,7 +5,7 @@
 
 @plugin "tailwindcss-animate";
 
-@source "../../../../libs/ui";
+@source "../../../../../libs/ui";
 
 @custom-variant dark (&:is(.dark *));
 

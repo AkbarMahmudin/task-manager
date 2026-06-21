@@ -83,7 +83,7 @@ export class TaskService implements ITaskService {
       ),
     };
 
-    await this.auditLogClient.insert(auditLog);
+    await this.auditLogClient.recordStatusChange(auditLog);
 
     return task;
   }
@@ -97,7 +97,7 @@ export class TaskService implements ITaskService {
   async getAuditLogs(taskId: string): Promise<AuditLog[]> {
     await this.getTaskById(taskId);
 
-    return this.auditLogClient.findByTaskId(taskId);
+    return this.auditLogClient.getLogsForTask(taskId);
   }
 
   private validateTransition(from: Task['status'], to: Task['status']): void {

@@ -5,11 +5,11 @@ import { IAuditLogRepository } from '../repositories/interfaces/audit-log.reposi
 export class AuditLogClient implements IAuditLogClient {
   constructor(private readonly repo: IAuditLogRepository) {}
 
-  async findByTaskId(taskId: string): Promise<AuditLog[]> {
+  async getLogsForTask(taskId: string): Promise<AuditLog[]> {
     return this.repo.findByTaskId(taskId);
   }
 
-  async insert(log: AuditLog): Promise<void> {
+  async recordStatusChange(log: AuditLog): Promise<void> {
     this.repo.insert(log);
   }
 }
