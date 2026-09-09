@@ -10,7 +10,7 @@ import { apiClient } from './client';
 export const taskApi = {
   getAll: async (): Promise<Task[]> => {
     const res = await apiClient.get<ApiResponse<Task[]>>('/tasks');
-    return res.data.data;
+    return res.data?.data ?? [];
   },
 
   getById: async (taskId: string): Promise<Task> => {
@@ -27,7 +27,7 @@ export const taskApi = {
     taskId: string,
     data: UpdateTaskStatusRequest,
   ): Promise<Task> => {
-    const res = await apiClient.patch<ApiResponse<Task>>(
+    const res = await apiClient.put<ApiResponse<Task>>(
       `/tasks/${taskId}/status`,
       data,
     );
