@@ -27,7 +27,7 @@ export const taskApi = {
     taskId: string,
     data: UpdateTaskStatusRequest,
   ): Promise<Task> => {
-    const res = await apiClient.put<ApiResponse<Task>>(
+    const res = await apiClient.patch<ApiResponse<Task>>(
       `/tasks/${taskId}/status`,
       data,
     );

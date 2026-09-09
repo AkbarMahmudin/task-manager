@@ -32,16 +32,17 @@ export class TaskService implements ITaskService {
   }
 
   async createTask(data: CreateTaskRequest): Promise<Task> {
+    const now = new Date();
     const task = {
       id: randomUUID(),
       title: data.title,
       description: data.description,
       status: TASK_STATUS_ORDER[0],
-      createdAt: new Date(),
-      updatedAt: null,
+      createdAt: now,
+      updatedAt: now,
     };
 
-    await this.repo.save(task);
+    await this.repo.create(task);
 
     return task;
   }
@@ -65,7 +66,7 @@ export class TaskService implements ITaskService {
     task.status = data.newStatus;
     task.updatedAt = new Date();
 
-    await this.repo.save(task);
+    await this.repo.update(taskId, task);
 
     // TODO: add to audit log
     const auditLog: AuditLog = {

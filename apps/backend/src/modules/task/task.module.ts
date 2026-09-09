@@ -7,9 +7,11 @@ import { TaskService } from './services/task.service';
 import { TaskController } from './controllers/task.controller';
 import { createTaskRouter } from './routes/task.route';
 import { IAuditLogClient } from '../../shared/clients/audit-log.client.interface';
+import { IDbClient } from '../../shared/clients/db.client.interface';
 
 export interface TaskModuleDependencies {
   auditLogClient: IAuditLogClient;
+  dbClient: IDbClient;
 }
 
 export interface TaskModule {
@@ -19,7 +21,7 @@ export interface TaskModule {
 }
 
 export function createTaskModule(deps: TaskModuleDependencies): TaskModule {
-  const taskRepo = new TaskRepository();
+  const taskRepo = new TaskRepository(deps.dbClient);
 
   const service = new TaskService(taskRepo, deps.auditLogClient);
   const controller = new TaskController(service);
