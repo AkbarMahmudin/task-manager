@@ -24,7 +24,7 @@ export const createUserSchema = z.object({
   password: z
     .string({ message: 'Password is required' })
     .min(1, 'Password cannot be empty')
-    .max(8, 'Password cannot exceed 8 characters'),
+    .max(16, 'Password cannot exceed 16 characters'),
 });
 
 export const updateUserSchema = z.object({

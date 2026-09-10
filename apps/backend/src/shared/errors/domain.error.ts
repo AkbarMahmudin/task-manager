@@ -18,3 +18,10 @@ export class UnauthorizedError extends DomainError {
     this.statusCode = 401;
   }
 }
+
+export class ConflictError extends DomainError {
+  constructor(message: string) {
+    super(message, 'CONFLICT');
+    this.statusCode = 409;
+  }
+}

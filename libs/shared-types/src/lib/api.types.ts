@@ -12,5 +12,6 @@ export interface ApiError {
     | 'TASK_NOT_FOUND'
     | 'VALIDATION_ERROR'
     | 'IDEMPOTENT_UPDATE'
-    | 'UNAUTHORIZED';
+    | 'UNAUTHORIZED'
+    | 'CONFLICT';
 }
