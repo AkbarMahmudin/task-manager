@@ -17,6 +17,7 @@ export const taskSchema = z.object({
   title: z.string(),
   description: z.string().optional(),
   status: taskStatusSchema,
+  userId: z.string().uuid(),
   createdAt: z.date(),
   updatedAt: z.date().nullable(),
 });
@@ -27,6 +28,18 @@ export const createTaskSchema = z.object({
     .string({ message: 'Title is required' })
     .min(1, 'Title cannot be empty')
     .max(255, 'Title cannot exceed 255 characters'),
+  description: z
+    .string()
+    .max(1000, 'Description cannot exceed 1000 characters')
+    .optional(),
+});
+
+export const updateTaskSchema = z.object({
+  title: z
+    .string()
+    .min(1, 'Title cannot be empty')
+    .max(255, 'Title cannot exceed 255 characters')
+    .optional(),
   description: z
     .string()
     .max(1000, 'Description cannot exceed 1000 characters')
@@ -45,4 +58,5 @@ export type TaskStatus = z.infer<typeof taskStatusSchema>;
 export type Actor = z.infer<typeof actorSchema>;
 export type Task = z.infer<typeof taskSchema>;
 export type CreateTaskRequest = z.infer<typeof createTaskSchema>;
+export type UpdateTaskRequest = z.infer<typeof updateTaskSchema>;
 export type UpdateTaskStatusRequest = z.infer<typeof updateTaskStatusSchema>;

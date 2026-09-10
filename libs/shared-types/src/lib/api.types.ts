@@ -13,5 +13,9 @@ export interface ApiError {
     | 'VALIDATION_ERROR'
     | 'IDEMPOTENT_UPDATE'
     | 'UNAUTHORIZED'
-    | 'CONFLICT';
+    | 'CONFLICT'
+    | 'FORBIDDEN'
+    | 'FAILED_PROCESS'
+    | 'BAD_REQUEST'
+    | 'NOT_FOUND';
 }

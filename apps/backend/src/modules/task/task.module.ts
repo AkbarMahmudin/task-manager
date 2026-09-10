@@ -1,11 +1,11 @@
-import type { ITaskService } from './services/interfaces/task.service.interface';
-import type { ITaskController } from './controllers/interfaces/task.controller.interface';
+import type { ITaskService } from './interfaces/task.service.interface';
+import type { ITaskController } from './interfaces/task.controller.interface';
 import type { Router } from 'express';
 
-import { TaskRepository } from './repositories/task.repository';
-import { TaskService } from './services/task.service';
-import { TaskController } from './controllers/task.controller';
-import { createTaskRouter } from './routes/task.route';
+import { TaskRepository } from './task.repository';
+import { TaskService } from './task.service';
+import { TaskController } from './task.controller';
+import { createTaskRouter } from './task.route';
 import { IAuditLogClient } from '../../shared/clients/audit-log.client.interface';
 import { IDbClient } from '../../shared/clients/db.client.interface';
 

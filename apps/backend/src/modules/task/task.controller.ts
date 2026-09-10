@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { ITaskController } from './interfaces/task.controller.interface';
-import { ITaskService } from '../services/interfaces/task.service.interface';
+import { ITaskService } from './interfaces/task.service.interface';
 import { ApiResponse } from '@task-manager/shared-types';
 
 export class TaskController implements ITaskController {
@@ -12,7 +12,8 @@ export class TaskController implements ITaskController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const tasks = await this.service.getAllTasks();
+      const userId = req.user?.userId ?? '';
+      const tasks = await this.service.getAllTasks({ userId: '' });
       const response: ApiResponse<typeof tasks> = {
         success: true,
         data: tasks,
@@ -48,7 +49,8 @@ export class TaskController implements ITaskController {
   ): Promise<void> {
     try {
       const data = req.body;
-      const task = await this.service.createTask(data);
+      const userId = req.user?.userId ?? '';
+      const task = await this.service.createTask(data, userId);
       const response: ApiResponse<typeof task> = {
         success: true,
         data: task,
@@ -72,6 +74,27 @@ export class TaskController implements ITaskController {
       const response: ApiResponse<typeof task> = {
         success: true,
         data: task,
+        message: 'Task status updated successfully.',
+      };
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateTask(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const { id } = req.params;
+      const data = req.body;
+      const userId = req.user?.userId ?? '';
+      const task = await this.service.updateTask(String(id), data, userId);
+      const response: ApiResponse<typeof task> = {
+        success: true,
+        data: task,
         message: 'Task updated successfully.',
       };
       res.status(200).json(response);
@@ -87,7 +110,8 @@ export class TaskController implements ITaskController {
   ): Promise<void> {
     try {
       const { id } = req.params;
-      await this.service.deleteTask(String(id));
+      const userId = req.user?.userId ?? '';
+      await this.service.deleteTask(String(id), userId);
       const response: ApiResponse<null> = {
         success: true,
         data: null,

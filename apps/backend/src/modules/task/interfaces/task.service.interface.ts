@@ -3,21 +3,28 @@ import {
   CreateTaskRequest,
   UpdateTaskStatusRequest,
   AuditLog,
+  UpdateTaskRequest,
 } from '@task-manager/shared-types';
 
 export interface ITaskService {
-  getAllTasks(): Promise<Task[]>;
+  getAllTasks(filter: { userId: string }): Promise<Task[]>;
 
   getTaskById(taskId: string): Promise<Task>;
 
-  createTask(data: CreateTaskRequest): Promise<Task>;
+  createTask(data: CreateTaskRequest, userId: string): Promise<Task>;
+
+  updateTask(
+    taskId: string,
+    data: UpdateTaskRequest,
+    userId: string,
+  ): Promise<Task>;
 
   updateTaskStatus(
     taskId: string,
     data: UpdateTaskStatusRequest,
   ): Promise<Task>;
 
-  deleteTask(taskId: string): Promise<void>;
+  deleteTask(taskId: string, userId: string): Promise<void>;
 
   // ── Audit Log Operations ──────────────────────────────
 

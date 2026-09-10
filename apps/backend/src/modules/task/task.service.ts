@@ -4,12 +4,17 @@ import {
   Task,
   TASK_STATUS_ORDER,
   AuditLog,
+  UpdateTaskRequest,
 } from '@task-manager/shared-types';
 import { ITaskService } from './interfaces/task.service.interface';
-import { ITaskRepository } from '../repositories/interfaces/task.repository.interface';
-import { DomainError } from '../../../shared/errors/domain.error';
+import { ITaskRepository } from './interfaces/task.repository.interface';
+import {
+  DomainError,
+  ForbiddenError,
+  NotFoundError,
+} from '../../shared/errors/domain.error';
 import { randomUUID } from 'crypto';
-import { IAuditLogClient } from '../../../shared/clients/audit-log.client.interface';
+import { IAuditLogClient } from '../../shared/clients/audit-log.client.interface';
 
 export class TaskService implements ITaskService {
   constructor(
@@ -17,34 +22,45 @@ export class TaskService implements ITaskService {
     private readonly auditLogClient: IAuditLogClient,
   ) {}
 
-  async getAllTasks(): Promise<Task[]> {
-    return this.repo.findAll();
+  async getAllTasks(filter: { userId: string }): Promise<Task[]> {
+    return this.repo.findAll(filter);
   }
 
   async getTaskById(taskId: string): Promise<Task> {
     const task = await this.repo.findById(taskId);
 
     if (!task) {
-      throw new DomainError('Task not found', 'TASK_NOT_FOUND');
+      throw new NotFoundError('Task not found');
     }
 
     return task;
   }
 
-  async createTask(data: CreateTaskRequest): Promise<Task> {
+  async createTask(data: CreateTaskRequest, userId: string): Promise<Task> {
     const now = new Date();
-    const task = {
-      id: randomUUID(),
+    const payload = {
       title: data.title,
       description: data.description,
       status: TASK_STATUS_ORDER[0],
+      userId: userId,
       createdAt: now,
       updatedAt: now,
     };
 
-    await this.repo.create(task);
+    return this.repo.create(payload);
+  }
 
-    return task;
+  async updateTask(
+    taskId: string,
+    data: UpdateTaskRequest,
+    userId: string,
+  ): Promise<Task> {
+    const task = await this.getTaskById(taskId);
+    if (userId !== task.userId) {
+      throw new ForbiddenError('You are not allowed this task');
+    }
+
+    return this.repo.update(taskId, data);
   }
 
   async updateTaskStatus(
@@ -89,8 +105,11 @@ export class TaskService implements ITaskService {
     return task;
   }
 
-  async deleteTask(taskId: string): Promise<void> {
-    await this.getTaskById(taskId);
+  async deleteTask(taskId: string, userId: string): Promise<void> {
+    const task = await this.getTaskById(taskId);
+    if (userId !== task.userId) {
+      throw new ForbiddenError('You are not allowed this task');
+    }
 
     await this.repo.delete(taskId);
   }

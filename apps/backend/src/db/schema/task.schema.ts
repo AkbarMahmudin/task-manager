@@ -1,4 +1,5 @@
 import { pgTable, uuid, text, timestamp, pgEnum } from 'drizzle-orm/pg-core';
+import { users } from './user.schema';
 
 export const taskStatusEnum = pgEnum('task_status', [
   'to_do',
@@ -12,6 +13,9 @@ export const tasks = pgTable('tasks', {
   title: text('title').notNull(),
   description: text('description'),
   status: taskStatusEnum('status').notNull().default('to_do'),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id),
   createdAt: timestamp('created_at', { withTimezone: true })
     .notNull()
     .defaultNow(),

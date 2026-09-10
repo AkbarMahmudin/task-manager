@@ -1,11 +1,12 @@
 import { Router } from 'express';
-import { ITaskController } from '../controllers/interfaces/task.controller.interface';
-import { validateBody } from '../../../shared/middlewares/validate-body.middleware';
+import { ITaskController } from './interfaces/task.controller.interface';
+import { validateBody } from '../../shared/middlewares/validate-body.middleware';
 import {
   createTaskSchema,
+  updateTaskSchema,
   updateTaskStatusSchema,
 } from '@task-manager/shared-types';
-import { authenticate } from '../../../shared/middlewares/authenticate.middleware';
+import { authenticate } from '../../shared/middlewares/authenticate.middleware';
 
 export function createTaskRouter(controller: ITaskController) {
   const router = Router();
@@ -21,6 +22,12 @@ export function createTaskRouter(controller: ITaskController) {
   router.get('/', controller.getAllTasks.bind(controller));
 
   router.get('/:id', controller.getTaskById.bind(controller));
+
+  router.patch(
+    '/:id',
+    validateBody(updateTaskSchema),
+    controller.updateTask.bind(controller),
+  );
 
   router.patch(
     '/:id/status',
