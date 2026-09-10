@@ -10,4 +10,6 @@ export interface IAuthService {
   }>;
 
   register(data: CreateUserRequest): Promise<Omit<User, 'password'>>;
+
+  getProfile(email: string): Promise<Omit<User, 'password'>>;
 }

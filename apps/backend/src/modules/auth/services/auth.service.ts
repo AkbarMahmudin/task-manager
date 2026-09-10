@@ -45,4 +45,9 @@ export class AuthService implements IAuthService {
       token,
     };
   }
+
+  async getProfile(email: string): Promise<Omit<User, 'password'>> {
+    const { password, ...user } = await this.userClient.findByEmail(email);
+    return user;
+  }
 }

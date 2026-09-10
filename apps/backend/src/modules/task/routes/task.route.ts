@@ -5,9 +5,12 @@ import {
   createTaskSchema,
   updateTaskStatusSchema,
 } from '@task-manager/shared-types';
+import { authenticate } from '../../../shared/middlewares/authenticate.middleware';
 
 export function createTaskRouter(controller: ITaskController) {
   const router = Router();
+
+  router.use(authenticate);
 
   router.post(
     '/',

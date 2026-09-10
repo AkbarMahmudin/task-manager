@@ -39,4 +39,23 @@ export class AuthController implements IAuthController {
       next(error);
     }
   }
+
+  async getProfile(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const email = req.user?.email ?? '';
+      const user = await this.service.getProfile(email);
+      const response: ApiResponse<typeof user> = {
+        success: true,
+        data: user,
+        message: 'User retrieved successfully.',
+      };
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
