@@ -13,7 +13,7 @@ export class TaskController implements ITaskController {
   ): Promise<void> {
     try {
       const userId = req.user?.userId ?? '';
-      const tasks = await this.service.getAllTasks({ userId: '' });
+      const tasks = await this.service.getAllTasks({ userId });
       const response: ApiResponse<typeof tasks> = {
         success: true,
         data: tasks,
@@ -70,7 +70,12 @@ export class TaskController implements ITaskController {
     try {
       const { id } = req.params;
       const data = req.body;
-      const task = await this.service.updateTaskStatus(String(id), data);
+      const userId = req.user?.userId ?? '';
+      const task = await this.service.updateTaskStatus(
+        String(id),
+        data,
+        userId,
+      );
       const response: ApiResponse<typeof task> = {
         success: true,
         data: task,

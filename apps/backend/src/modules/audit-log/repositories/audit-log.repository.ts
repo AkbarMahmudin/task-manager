@@ -11,10 +11,11 @@ export class AuditLogRepository implements IAuditLogRepository {
     const db = this.dbClient.getDb();
     await db.insert(auditLogs).values({
       id: log.id,
-      actor: log.actor,
-      previousStatus: log.fromStatus,
-      newStatus: log.toStatus,
       taskId: log.taskId,
+      userId: log.userId,
+      fromStatus: log.fromStatus,
+      toStatus: log.toStatus,
+      description: log.description,
     });
   }
 

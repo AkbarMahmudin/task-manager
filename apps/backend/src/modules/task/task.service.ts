@@ -66,34 +66,28 @@ export class TaskService implements ITaskService {
   async updateTaskStatus(
     taskId: string,
     data: UpdateTaskStatusRequest,
+    userId: string,
   ): Promise<Task> {
     const task = await this.getTaskById(taskId);
     const prevStatus = task.status;
 
-    if (task.status === data.newStatus) {
-      throw new DomainError(
-        `Task is already in status "${data.newStatus}". No changes made.`,
-        'IDEMPOTENT_UPDATE',
-      );
+    if (userId !== task.userId) {
+      throw new ForbiddenError('You are not allowed this task');
     }
-
-    this.validateTransition(task.status, data.newStatus);
 
     task.status = data.newStatus;
     task.updatedAt = new Date();
 
     await this.repo.update(taskId, task);
 
-    // TODO: add to audit log
     const auditLog: AuditLog = {
       id: randomUUID(),
       taskId: task.id,
-      actor: data.actor,
+      userId: userId,
       fromStatus: prevStatus,
       toStatus: data.newStatus,
       changedAt: task.updatedAt,
       description: this.buildLogDescription(
-        data.actor,
         task.title,
         prevStatus,
         data.newStatus,
@@ -134,12 +128,11 @@ export class TaskService implements ITaskService {
   }
 
   private buildLogDescription(
-    actor: string,
     taskTitle: string,
     from: Task['status'],
     to: Task['status'],
   ): string {
     const now = new Date().toISOString().replace('T', ' ').split('.')[0];
-    return `User "${actor}" changed Task "${taskTitle}" status from "${from}" to "${to}" at ${now}`;
+    return `Changed task "${taskTitle}" status from "${from}" to "${to}" at ${now}`;
   }
 }

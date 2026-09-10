@@ -22,6 +22,7 @@ export interface ITaskService {
   updateTaskStatus(
     taskId: string,
     data: UpdateTaskStatusRequest,
+    userId: string,
   ): Promise<Task>;
 
   deleteTask(taskId: string, userId: string): Promise<void>;

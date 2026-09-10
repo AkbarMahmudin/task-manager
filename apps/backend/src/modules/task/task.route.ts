@@ -37,7 +37,7 @@ export function createTaskRouter(controller: ITaskController) {
 
   router.delete('/:id', controller.deleteTask.bind(controller));
 
-  router.get('/:id/audit-logs', controller.getAuditLogs.bind(controller));
+  router.get('/:id/logs', controller.getAuditLogs.bind(controller));
 
   return router;
 }

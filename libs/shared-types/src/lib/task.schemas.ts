@@ -48,7 +48,6 @@ export const updateTaskSchema = z.object({
 
 export const updateTaskStatusSchema = z.object({
   newStatus: taskStatusSchema,
-  actor: actorSchema,
 });
 
 /**

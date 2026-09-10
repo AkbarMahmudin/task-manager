@@ -1,4 +1,11 @@
-import { pgTable, uuid, text, timestamp, pgEnum } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  uuid,
+  text,
+  timestamp,
+  pgEnum,
+  varchar,
+} from 'drizzle-orm/pg-core';
 import { users } from './user.schema';
 
 export const taskStatusEnum = pgEnum('task_status', [
@@ -10,7 +17,7 @@ export const taskStatusEnum = pgEnum('task_status', [
 
 export const tasks = pgTable('tasks', {
   id: uuid('id').defaultRandom().primaryKey(),
-  title: text('title').notNull(),
+  title: varchar('title', { length: 100 }).notNull(),
   description: text('description'),
   status: taskStatusEnum('status').notNull().default('to_do'),
   userId: uuid('user_id')
