@@ -11,5 +11,6 @@ export interface ApiError {
     | 'INVALID_TRANSITION'
     | 'TASK_NOT_FOUND'
     | 'VALIDATION_ERROR'
-    | 'IDEMPOTENT_UPDATE';
+    | 'IDEMPOTENT_UPDATE'
+    | 'UNAUTHORIZED';
 }
