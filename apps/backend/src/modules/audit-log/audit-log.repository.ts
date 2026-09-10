@@ -1,7 +1,7 @@
 import { AuditLog } from '@task-manager/shared-types';
 import { IAuditLogRepository } from './interfaces/audit-log.repository.interface';
-import { IDbClient } from '../../../shared/clients/db.client.interface';
-import { auditLogs } from '../../../db/schema';
+import { IDbClient } from '../../shared/clients/db.client.interface';
+import { auditLogs } from '../../db/schema';
 import { eq } from 'drizzle-orm';
 
 export class AuditLogRepository implements IAuditLogRepository {

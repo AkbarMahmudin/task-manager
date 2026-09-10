@@ -1,7 +1,7 @@
-import { UserRepository } from './repositories/user.repository';
+import { UserRepository } from './user.repository';
 import { IDbClient } from '../../shared/clients/db.client.interface';
 import { IUserClient } from '../../shared/clients/user.client.interface';
-import { UserClient } from './services/user.client';
+import { UserClient } from './user.client';
 
 export interface UserModuleDependencies {
   dbClient: IDbClient;

@@ -3,12 +3,12 @@ import {
   CreateUserRequest,
   User,
 } from '@task-manager/shared-types';
-import { IUserClient } from '../../../shared/clients/user.client.interface';
+import { IUserClient } from '../../shared/clients/user.client.interface';
 import { IAuthService } from './interfaces/auth.service.interface';
 import { hash, compare } from 'bcrypt';
 import { randomUUID } from 'crypto';
-import { signToken } from '../../../shared/utils/jwt.util';
-import { UnauthorizedError } from '../../../shared/errors/domain.error';
+import { signToken } from '../../shared/utils/jwt.util';
+import { UnauthorizedError } from '../../shared/errors/domain.error';
 
 export class AuthService implements IAuthService {
   constructor(private readonly userClient: IUserClient) {}

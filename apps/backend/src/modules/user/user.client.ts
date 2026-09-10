@@ -1,7 +1,7 @@
 import { User } from '@task-manager/shared-types';
-import { IUserRepository } from '../repositories/interfaces/user.repository.interface';
-import { IUserClient } from '../../../shared/clients/user.client.interface';
-import { ConflictError } from '../../../shared/errors/domain.error';
+import { IUserRepository } from './interfaces/user.repository.interface';
+import { IUserClient } from '../../shared/clients/user.client.interface';
+import { ConflictError } from '../../shared/errors/domain.error';
 
 export class UserClient implements IUserClient {
   constructor(private readonly repo: IUserRepository) {}

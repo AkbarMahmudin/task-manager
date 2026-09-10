@@ -1,6 +1,6 @@
-import { AuditLogRepository } from './repositories/audit-log.repository';
+import { AuditLogRepository } from './audit-log.repository';
 import { IAuditLogClient } from '../../shared/clients/audit-log.client.interface';
-import { AuditLogClient } from './services/audit-log.client';
+import { AuditLogClient } from './audit-log.client';
 import { IDbClient } from '../../shared/clients/db.client.interface';
 
 export interface AuditLogModuleDependencies {

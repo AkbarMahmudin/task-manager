@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { IAuthController } from './interfaces/auth.controller.interface';
-import { IAuthService } from '../services/interfaces/auth.service.interface';
+import { IAuthService } from './interfaces/auth.service.interface';
 import { ApiResponse } from '@task-manager/shared-types';
 
 export class AuthController implements IAuthController {

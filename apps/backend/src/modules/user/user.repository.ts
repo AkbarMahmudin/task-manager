@@ -1,7 +1,7 @@
 import { User } from '@task-manager/shared-types';
 import { IUserRepository } from './interfaces/user.repository.interface';
-import { IDbClient } from '../../../shared/clients/db.client.interface';
-import { users } from '../../../db/schema';
+import { IDbClient } from '../../shared/clients/db.client.interface';
+import { users } from '../../db/schema';
 import { eq } from 'drizzle-orm';
 
 export class UserRepository implements IUserRepository {
