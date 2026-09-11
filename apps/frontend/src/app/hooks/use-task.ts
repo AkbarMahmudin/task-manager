@@ -1,21 +1,32 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query';
 import type {
   CreateTaskRequest,
   UpdateTaskRequest,
   UpdateTaskStatusRequest,
 } from '@task-manager/shared-types';
-import { taskApi } from '../api/task.api';
+import { taskApi, ITaskFilter } from '../api/task.api';
 import { auditLogKeys } from './use-audit-log';
 
 export const taskKeys = {
   all: () => ['tasks'] as const,
+  // filter ikut masuk ke query key -> ganti page/search otomatis fetch ulang
+  // dan masing-masing kombinasi filter di-cache terpisah oleh React Query
+  list: (filter?: ITaskFilter) => [...taskKeys.all(), 'list', filter] as const,
   detail: (id: string) => ['tasks', id] as const,
 } as const;
 
-export function useTasks() {
+export function useTasks(filter?: ITaskFilter) {
   return useQuery({
-    queryKey: taskKeys.all(),
-    queryFn: taskApi.getAll,
+    queryKey: taskKeys.list(filter),
+    queryFn: () => taskApi.getAll(filter),
+    // Data halaman sebelumnya tetap ditampilkan selagi halaman baru fetch,
+    // supaya tidak ada flash loading state saat pindah halaman/ketik search
+    placeholderData: keepPreviousData,
   });
 }
 

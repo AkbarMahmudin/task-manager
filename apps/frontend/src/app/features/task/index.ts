@@ -5,3 +5,5 @@ export * from './components/AuditLogDrawer';
 export * from './components/TaskItem';
 export * from './components/TaskStatusBadge';
 export * from './components/UpdateStatusSelect';
+export * from './components/TaskSearchBar';
+export * from './components/TaskPagination';

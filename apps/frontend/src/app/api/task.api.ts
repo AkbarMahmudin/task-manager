@@ -16,16 +16,42 @@ export type ITaskFilter = {
   search?: string;
 };
 
+export type PaginationMeta = {
+  page: number;
+  limit: number;
+  totalData: number;
+  totalPages: number;
+};
+
+export type TaskListResult = {
+  tasks: Task[];
+  meta: PaginationMeta;
+};
+
+const DEFAULT_PAGE = 1;
+const DEFAULT_LIMIT = 10;
+
 export const taskApi = {
-  getAll: async (filter: ITaskFilter): Promise<Task[]> => {
+  getAll: async (filter?: ITaskFilter): Promise<TaskListResult> => {
     const res = await apiClient.get<ApiResponse<Task[]>>('/tasks', {
       params: {
-        page: filter?.page ?? 1,
-        limit: filter?.limit ?? 100,
-        search: filter?.search ?? '',
+        page: filter?.page ?? DEFAULT_PAGE,
+        limit: filter?.limit ?? DEFAULT_LIMIT,
+        // Kirim search hanya kalau ada isinya, biar query params tetap bersih
+        ...(filter?.search ? { search: filter.search } : {}),
       },
     });
-    return res.data?.data ?? [];
+
+    return {
+      tasks: res.data?.data ?? [],
+      // Fallback dijaga untuk backward-compat kalau backend belum kirim meta
+      meta: res.data?.meta ?? {
+        page: DEFAULT_PAGE,
+        limit: DEFAULT_LIMIT,
+        totalData: res.data?.data?.length ?? 0,
+        totalPages: 1,
+      },
+    };
   },
 
   getById: async (taskId: string): Promise<Task> => {

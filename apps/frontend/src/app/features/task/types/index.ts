@@ -74,3 +74,19 @@ export interface UpdateStatusSelectProps {
   onSelect: (data: UpdateTaskStatusRequest) => void;
   isSubmitting: boolean;
 }
+
+// ── TaskSearchBar ──────────────────────────────────────────────────────────
+export interface TaskSearchBarProps {
+  value: string;
+  onSearchChange: (value: string) => void;
+  placeholder?: string;
+}
+
+// ── TaskPagination ──────────────────────────────────────────────────────────
+export interface TaskPaginationProps {
+  page: number;
+  totalPages: number;
+  totalData: number;
+  onPageChange: (page: number) => void;
+  isFetching?: boolean;
+}
