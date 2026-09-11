@@ -1,0 +1,1 @@
+ALTER TABLE "audit_logs" DROP CONSTRAINT "audit_logs_task_id_tasks_id_fkey", ADD CONSTRAINT "audit_logs_task_id_tasks_id_fkey" FOREIGN KEY ("task_id") REFERENCES "tasks"("id") ON DELETE CASCADE;

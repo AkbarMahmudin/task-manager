@@ -10,9 +10,10 @@ import {
 import { Avatar, AvatarFallback } from '@task-manager/ui/components/avatar';
 import { ThemeToggle } from '@task-manager/ui/components/theme-toggle';
 import { ChevronDownIcon, LogOutIcon } from 'lucide-react';
+import { Spinner } from '@task-manager/ui/components/spinner';
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
+  const auth = useAuth();
   const logoutMutation = useLogout();
 
   const handleSignOut = async (e: FormEvent) => {
@@ -28,12 +29,12 @@ export function AppShell({ children }: { children: ReactNode }) {
             <DropdownMenuTrigger className="flex gap-2 items-center">
               <Avatar>
                 <AvatarFallback className="uppercase">
-                  {user?.name?.slice(0, 2)}
+                  {auth?.user?.name?.slice(0, 2)}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user?.name}</span>
-                <span className="truncate text-xs">{user?.email}</span>
+                <span className="truncate font-medium">{auth?.user?.name}</span>
+                <span className="truncate text-xs">{auth?.user?.email}</span>
               </div>
               <ChevronDownIcon className="ml-auto size-4" />
             </DropdownMenuTrigger>

@@ -6,6 +6,9 @@ COPY package*.json nx.json ./
 COPY . .
 RUN npm ci
 
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 # Build the frontend application
 RUN npx nx build frontend --prod
 
@@ -16,7 +19,7 @@ FROM nginx:alpine AS runner
 COPY --from=builder /app/apps/frontend/dist /usr/share/nginx/html
 
 # (Optional) Copy a custom nginx configuration if you handle client-side routing
-# COPY apps/frontend/nginx.conf /etc/nginx/conf.d/default.conf
+COPY apps/frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 

@@ -7,9 +7,9 @@ export function useLogin() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: authApi.login,
-    onSuccess: (user) => {
+    onSuccess: async (user) => {
       saveToken(user.token);
-      queryClient.setQueryData(AUTH_QUERY_KEY, user);
+      await queryClient.invalidateQueries({ queryKey: AUTH_QUERY_KEY });
     },
   });
 }
