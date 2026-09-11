@@ -2,6 +2,12 @@ export interface ApiResponse<T> {
   success: boolean;
   data: T;
   message?: string;
+  meta?: {
+    page: number;
+    limit: number;
+    totalData: number;
+    totalPages: number;
+  };
 }
 
 export interface ApiError {

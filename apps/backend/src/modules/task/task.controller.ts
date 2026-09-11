@@ -19,7 +19,7 @@ export class TaskController implements ITaskController {
         limit = '10',
         search,
       }: ITaskFindAllFilter = req.query;
-      const tasks = await this.service.getAllTasks({
+      const { data: tasks, meta } = await this.service.getAllTasks({
         page,
         limit,
         userId,
@@ -28,6 +28,7 @@ export class TaskController implements ITaskController {
       const response: ApiResponse<typeof tasks> = {
         success: true,
         data: tasks,
+        meta,
       };
       res.status(200).json(response);
     } catch (error) {

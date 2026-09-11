@@ -5,10 +5,10 @@ import {
   AuditLog,
   UpdateTaskRequest,
 } from '@task-manager/shared-types';
-import { ITaskFindAllFilter } from './task.dto.interface';
+import { ITaskFindAllFilter, TaskWithMeta } from './task.dto.interface';
 
 export interface ITaskService {
-  getAllTasks(filter: ITaskFindAllFilter): Promise<Task[]>;
+  getAllTasks(filter: ITaskFindAllFilter): Promise<TaskWithMeta>;
 
   getTaskById(taskId: string, userId: string): Promise<Task>;
 

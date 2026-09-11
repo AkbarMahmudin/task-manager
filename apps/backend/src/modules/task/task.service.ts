@@ -14,7 +14,10 @@ import {
 } from '../../shared/errors/domain.error';
 import { randomUUID } from 'crypto';
 import { IAuditLogClient } from '../../shared/clients/audit-log.client.interface';
-import { ITaskFindAllFilter } from './interfaces/task.dto.interface';
+import {
+  ITaskFindAllFilter,
+  TaskWithMeta,
+} from './interfaces/task.dto.interface';
 
 export class TaskService implements ITaskService {
   constructor(
@@ -22,8 +25,8 @@ export class TaskService implements ITaskService {
     private readonly auditLogClient: IAuditLogClient,
   ) {}
 
-  async getAllTasks(filter: ITaskFindAllFilter): Promise<Task[]> {
-    return this.repo.findAll(filter);
+  async getAllTasks(filter: ITaskFindAllFilter): Promise<TaskWithMeta> {
+    return this.repo.findAllWithPagination(filter);
   }
 
   async getTaskById(taskId: string, userId: string): Promise<Task> {

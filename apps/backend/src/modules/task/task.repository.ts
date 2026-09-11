@@ -2,13 +2,30 @@ import { Task } from '@task-manager/shared-types';
 import { ITaskRepository } from './interfaces/task.repository.interface';
 import { IDbClient } from '../../shared/clients/db.client.interface';
 import { tasks } from '../../db/schema';
-import { and, eq, ilike, SQL } from 'drizzle-orm';
-import { ITaskFindAllFilter } from './interfaces/task.dto.interface';
+import { and, count, eq, ilike, SQL } from 'drizzle-orm';
+import {
+  ITaskFindAllFilter,
+  TaskWithMeta,
+} from './interfaces/task.dto.interface';
 
 export class TaskRepository implements ITaskRepository {
   constructor(private readonly dbClient: IDbClient) {}
 
-  async findAll(filter: ITaskFindAllFilter): Promise<Task[]> {
+  async findAll(): Promise<Task[]> {
+    const db = this.dbClient.getDb();
+    const conditions: SQL[] = [];
+
+    const result = await db
+      .select()
+      .from(tasks)
+      .where(and(...conditions));
+
+    return result.map((row) => row as Task);
+  }
+
+  async findAllWithPagination(
+    filter: ITaskFindAllFilter,
+  ): Promise<TaskWithMeta> {
     const db = this.dbClient.getDb();
 
     const { userId, page = '1', limit = '20', search } = filter;
@@ -30,7 +47,24 @@ export class TaskRepository implements ITaskRepository {
       .limit(+limit)
       .offset(offset);
 
-    return result.map((row) => row as Task);
+    const [totalResult] = await db
+      .select({ count: count() })
+      .from(tasks)
+      .where(and(...conditions));
+
+    const data = result.map((row) => row as Task);
+    const totalData = totalResult.count;
+    const totalPages = Math.ceil(totalData / +limit);
+
+    return {
+      data,
+      meta: {
+        page: +page,
+        limit: +limit,
+        totalData,
+        totalPages,
+      },
+    };
   }
 
   async findById(id: string): Promise<Task | null> {
