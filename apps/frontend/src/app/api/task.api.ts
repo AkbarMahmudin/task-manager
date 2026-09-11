@@ -5,12 +5,26 @@ import type {
   UpdateTaskStatusRequest,
   ApiResponse,
   UpdateTaskRequest,
+  TaskStatus,
 } from '@task-manager/shared-types';
 import { apiClient } from './client';
 
+export type ITaskFilter = {
+  status?: TaskStatus;
+  page?: number;
+  limit?: number;
+  search?: string;
+};
+
 export const taskApi = {
-  getAll: async (): Promise<Task[]> => {
-    const res = await apiClient.get<ApiResponse<Task[]>>('/tasks');
+  getAll: async (filter: ITaskFilter): Promise<Task[]> => {
+    const res = await apiClient.get<ApiResponse<Task[]>>('/tasks', {
+      params: {
+        page: filter?.page ?? 1,
+        limit: filter?.limit ?? 100,
+        search: filter?.search ?? '',
+      },
+    });
     return res.data?.data ?? [];
   },
 

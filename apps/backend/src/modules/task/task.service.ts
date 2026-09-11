@@ -15,6 +15,7 @@ import {
 } from '../../shared/errors/domain.error';
 import { randomUUID } from 'crypto';
 import { IAuditLogClient } from '../../shared/clients/audit-log.client.interface';
+import { ITaskFindAllFilter } from './interfaces/task.dto.interface';
 
 export class TaskService implements ITaskService {
   constructor(
@@ -22,15 +23,19 @@ export class TaskService implements ITaskService {
     private readonly auditLogClient: IAuditLogClient,
   ) {}
 
-  async getAllTasks(filter: { userId: string }): Promise<Task[]> {
+  async getAllTasks(filter: ITaskFindAllFilter): Promise<Task[]> {
     return this.repo.findAll(filter);
   }
 
-  async getTaskById(taskId: string): Promise<Task> {
+  async getTaskById(taskId: string, userId: string): Promise<Task> {
     const task = await this.repo.findById(taskId);
 
     if (!task) {
       throw new NotFoundError('Task not found');
+    }
+
+    if (userId !== task.userId) {
+      throw new ForbiddenError('You are not allowed this task');
     }
 
     return task;
@@ -55,10 +60,7 @@ export class TaskService implements ITaskService {
     data: UpdateTaskRequest,
     userId: string,
   ): Promise<Task> {
-    const task = await this.getTaskById(taskId);
-    if (userId !== task.userId) {
-      throw new ForbiddenError('You are not allowed this task');
-    }
+    await this.getTaskById(taskId, userId);
 
     return this.repo.update(taskId, {
       ...data,
@@ -71,12 +73,8 @@ export class TaskService implements ITaskService {
     data: UpdateTaskStatusRequest,
     userId: string,
   ): Promise<Task> {
-    const task = await this.getTaskById(taskId);
+    const task = await this.getTaskById(taskId, userId);
     const prevStatus = task.status;
-
-    if (userId !== task.userId) {
-      throw new ForbiddenError('You are not allowed this task');
-    }
 
     task.status = data.newStatus;
     task.updatedAt = new Date();
@@ -103,16 +101,13 @@ export class TaskService implements ITaskService {
   }
 
   async deleteTask(taskId: string, userId: string): Promise<void> {
-    const task = await this.getTaskById(taskId);
-    if (userId !== task.userId) {
-      throw new ForbiddenError('You are not allowed this task');
-    }
+    await this.getTaskById(taskId, userId);
 
     await this.repo.delete(taskId);
   }
 
-  async getAuditLogs(taskId: string): Promise<AuditLog[]> {
-    await this.getTaskById(taskId);
+  async getAuditLogs(taskId: string, userId: string): Promise<AuditLog[]> {
+    await this.getTaskById(taskId, userId);
 
     return this.auditLogClient.getLogsForTask(taskId);
   }

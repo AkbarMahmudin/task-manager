@@ -1,11 +1,9 @@
-import { TaskStatus, Task } from '@task-manager/shared-types';
-import {
-  ITaskFindAllFilter,
-  ITaskRepository,
-} from './interfaces/task.repository.interface';
+import { Task } from '@task-manager/shared-types';
+import { ITaskRepository } from './interfaces/task.repository.interface';
 import { IDbClient } from '../../shared/clients/db.client.interface';
 import { tasks } from '../../db/schema';
-import { and, eq, SQL } from 'drizzle-orm';
+import { and, eq, ilike, SQL } from 'drizzle-orm';
+import { ITaskFindAllFilter } from './interfaces/task.dto.interface';
 
 export class TaskRepository implements ITaskRepository {
   constructor(private readonly dbClient: IDbClient) {}
@@ -13,15 +11,24 @@ export class TaskRepository implements ITaskRepository {
   async findAll(filter: ITaskFindAllFilter): Promise<Task[]> {
     const db = this.dbClient.getDb();
 
+    const { userId, page = '1', limit = '20', search } = filter;
+    const offset = (+page - 1) * +limit;
+
     const conditions: SQL[] = [];
-    if (filter?.userId) {
-      conditions.push(eq(tasks.userId, filter?.userId));
+    if (userId) {
+      conditions.push(eq(tasks.userId, userId));
+    }
+
+    if (search) {
+      conditions.push(ilike(tasks.title, `%${search}%`));
     }
 
     const result = await db
       .select()
       .from(tasks)
-      .where(and(...conditions));
+      .where(and(...conditions))
+      .limit(+limit)
+      .offset(offset);
 
     return result.map((row) => row as Task);
   }

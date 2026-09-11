@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { ITaskController } from './interfaces/task.controller.interface';
 import { ITaskService } from './interfaces/task.service.interface';
 import { ApiResponse } from '@task-manager/shared-types';
+import { ITaskFindAllFilter } from './interfaces/task.dto.interface';
 
 export class TaskController implements ITaskController {
   constructor(private readonly service: ITaskService) {}
@@ -13,7 +14,17 @@ export class TaskController implements ITaskController {
   ): Promise<void> {
     try {
       const userId = req.user?.userId ?? '';
-      const tasks = await this.service.getAllTasks({ userId });
+      const {
+        page = '1',
+        limit = '10',
+        search,
+      }: ITaskFindAllFilter = req.query;
+      const tasks = await this.service.getAllTasks({
+        page,
+        limit,
+        userId,
+        search,
+      });
       const response: ApiResponse<typeof tasks> = {
         success: true,
         data: tasks,
@@ -31,7 +42,8 @@ export class TaskController implements ITaskController {
   ): Promise<void> {
     try {
       const { id } = req.params;
-      const task = await this.service.getTaskById(String(id));
+      const userId = req.user?.userId ?? '';
+      const task = await this.service.getTaskById(String(id), userId);
       const response: ApiResponse<typeof task> = {
         success: true,
         data: task,
@@ -135,7 +147,8 @@ export class TaskController implements ITaskController {
   ): Promise<void> {
     try {
       const { id } = req.params;
-      const auditLogs = await this.service.getAuditLogs(String(id));
+      const userId = req.user?.userId ?? '';
+      const auditLogs = await this.service.getAuditLogs(String(id), userId);
       const response: ApiResponse<typeof auditLogs> = {
         success: true,
         data: auditLogs,

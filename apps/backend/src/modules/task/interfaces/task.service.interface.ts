@@ -5,11 +5,12 @@ import {
   AuditLog,
   UpdateTaskRequest,
 } from '@task-manager/shared-types';
+import { ITaskFindAllFilter } from './task.dto.interface';
 
 export interface ITaskService {
-  getAllTasks(filter: { userId: string }): Promise<Task[]>;
+  getAllTasks(filter: ITaskFindAllFilter): Promise<Task[]>;
 
-  getTaskById(taskId: string): Promise<Task>;
+  getTaskById(taskId: string, userId: string): Promise<Task>;
 
   createTask(data: CreateTaskRequest, userId: string): Promise<Task>;
 
@@ -29,5 +30,5 @@ export interface ITaskService {
 
   // ── Audit Log Operations ──────────────────────────────
 
-  getAuditLogs(taskId: string): Promise<AuditLog[]>;
+  getAuditLogs(taskId: string, userId: string): Promise<AuditLog[]>;
 }
