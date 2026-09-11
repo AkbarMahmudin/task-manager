@@ -10,7 +10,6 @@ import {
 import { Avatar, AvatarFallback } from '@task-manager/ui/components/avatar';
 import { ThemeToggle } from '@task-manager/ui/components/theme-toggle';
 import { ChevronDownIcon, LogOutIcon } from 'lucide-react';
-import { Spinner } from '@task-manager/ui/components/spinner';
 
 export function AppShell({ children }: { children: ReactNode }) {
   const auth = useAuth();
