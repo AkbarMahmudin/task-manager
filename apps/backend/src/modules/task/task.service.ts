@@ -9,7 +9,6 @@ import {
 import { ITaskService } from './interfaces/task.service.interface';
 import { ITaskRepository } from './interfaces/task.repository.interface';
 import {
-  DomainError,
   ForbiddenError,
   NotFoundError,
 } from '../../shared/errors/domain.error';
