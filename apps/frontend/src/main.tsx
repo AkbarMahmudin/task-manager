@@ -10,8 +10,6 @@ if (!root) throw new Error('Root element #root not found');
 
 ReactDOM.createRoot(root).render(
   <StrictMode>
-    <AppProviders>
-      <App />
-    </AppProviders>
+    <App />
   </StrictMode>,
 );

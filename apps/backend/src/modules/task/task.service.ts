@@ -60,7 +60,10 @@ export class TaskService implements ITaskService {
       throw new ForbiddenError('You are not allowed this task');
     }
 
-    return this.repo.update(taskId, data);
+    return this.repo.update(taskId, {
+      ...data,
+      updatedAt: new Date(),
+    });
   }
 
   async updateTaskStatus(

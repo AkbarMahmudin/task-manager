@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type {
   CreateTaskRequest,
+  UpdateTaskRequest,
   UpdateTaskStatusRequest,
 } from '@task-manager/shared-types';
 import { taskApi } from '../api/task.api';
@@ -36,6 +37,34 @@ export function useCreateTask() {
     onSuccess: () => {
       // Invalidate list — task baru harus muncul di list
       queryClient.invalidateQueries({ queryKey: taskKeys.all() });
+    },
+  });
+}
+
+export function useUpdateTask() {
+  const queryClient = useQueryClient();
+
+  // taskId masuk sebagai bagian dari variables, bukan parameter hook
+  // Alasan: satu hook instance bisa dipakai untuk update task manapun di list
+  // Kalau taskId di parameter hook, harus buat instance per task
+  return useMutation({
+    mutationFn: ({
+      taskId,
+      data,
+    }: {
+      taskId: string;
+      data: UpdateTaskRequest;
+    }) => taskApi.update(taskId, data),
+
+    onSuccess: (_, variables) => {
+      // Invalidate list — status badge di list harus update
+      queryClient.invalidateQueries({ queryKey: taskKeys.all() });
+
+      // Invalidate audit log task yang bersangkutan
+      // Kalau drawer log sedang terbuka, log langsung refresh
+      queryClient.invalidateQueries({
+        queryKey: auditLogKeys.forTask(variables.taskId),
+      });
     },
   });
 }
