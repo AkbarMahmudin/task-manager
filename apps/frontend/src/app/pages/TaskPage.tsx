@@ -5,6 +5,7 @@ import {
   useCreateTask,
   useDeleteTask,
   useTasks,
+  useUpdateTask,
   useUpdateTaskStatus,
 } from '../hooks/use-task';
 import { Skeleton } from '@task-manager/ui/components/skeleton';
@@ -17,6 +18,7 @@ export const TaskPage = () => {
 
   const { data: tasks = [], isLoading, isError } = useTasks();
   const createTask = useCreateTask();
+  const updateTask = useUpdateTask();
   const updateStatus = useUpdateTaskStatus();
   const deleteTask = useDeleteTask();
 
@@ -31,7 +33,7 @@ export const TaskPage = () => {
           <div className="text-left">
             <h1 className="text-2xl font-bold text-foreground">My Task</h1>
             <p className="text-sm text-muted-foreground">
-              Manage and monitor all your tasks
+              Manage and monitor all your assignments
             </p>
           </div>
           <CreateTaskForm
@@ -51,7 +53,7 @@ export const TaskPage = () => {
         {isError && (
           <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-6 text-center">
             <p className="text-destructive">
-              Gagal memuat tugas. Silakan coba lagi.
+              Failed to load task. Please try again.
             </p>
           </div>
         )}
@@ -62,10 +64,10 @@ export const TaskPage = () => {
               <ClipboardList className="h-8 w-8 text-muted-foreground" />
             </div>
             <h3 className="mb-1 text-lg font-semibold text-foreground">
-              Belum ada tugas
+              None Assignments
             </h3>
             <p className="text-sm text-muted-foreground">
-              Mulai tambahkan tugas pertama Anda!
+              Start adding your first task!
             </p>
           </div>
         )}
@@ -78,11 +80,13 @@ export const TaskPage = () => {
             onSelectTask={(id) =>
               setSelectedTaskId((prev) => (prev === id ? null : id))
             }
+            onUpdate={(taskId, data) => updateTask.mutate({ taskId, data })}
             onUpdateStatus={(taskId, data) =>
               updateStatus.mutate({ taskId, data })
             }
             onDelete={(taskId) => deleteTask.mutate(taskId)}
             isUpdatingStatus={updateStatus.isPending}
+            isUpdating={updateTask.isPending}
             isDeleting={deleteTask.isPending}
           />
         )}

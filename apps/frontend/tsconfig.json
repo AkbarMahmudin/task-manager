@@ -8,7 +8,7 @@
   ],
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "moduleResolution": "bundler",
+    "moduleResolution": "NodeNext",
     "resolvePackageJsonImports": true
   }
 }

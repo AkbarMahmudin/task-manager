@@ -20,22 +20,27 @@ import {
   ArrowRightIcon,
   Calendar,
   CalendarPlus,
+  EyeIcon,
   History,
   Timeline,
   X,
 } from 'lucide-react';
 import { Button, buttonVariants } from '@task-manager/ui/components/button';
 import { TaskDetailButtonProps } from '../types';
+import { useIsMobile } from '../../../hooks/use-mobile';
 
 export const TaskDetailButton = ({ task, ...props }: TaskDetailButtonProps) => {
+  const isMobile = useIsMobile();
+
   return (
-    <Drawer direction="right">
+    <Drawer direction={isMobile ? 'bottom' : 'right'}>
       <DrawerTrigger
         className={buttonVariants({
           size: 'icon',
+          variant: 'outline',
         })}
       >
-        <ArrowRightIcon />
+        <EyeIcon />
       </DrawerTrigger>
       <DrawerContent className="overflow-hidden">
         <DrawerHeader className="bg-secondary-foreground flex flex-row items-center">

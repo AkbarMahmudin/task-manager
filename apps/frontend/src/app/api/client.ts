@@ -1,16 +1,18 @@
 import axios, { AxiosError } from 'axios';
 import { ApiError } from '@task-manager/shared-types';
 import { AppError } from './error';
+import { clearToken, getToken } from '../lib/auth';
 
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api',
+  baseURL: import.meta.env.VITE_API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
 apiClient.interceptors.request.use((config) => {
-  // TODO: inject headers jika dibutuhkan
+  const token = getToken();
+  if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 

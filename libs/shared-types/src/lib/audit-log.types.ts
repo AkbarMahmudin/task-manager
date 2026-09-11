@@ -1,4 +1,4 @@
-import type { TaskStatus, Actor } from './task.schemas.js';
+import type { TaskStatus } from './task.schemas.js';
 
 // ──────────────────────────────────────────────
 // AuditLog — Readonly by design
@@ -9,7 +9,7 @@ import type { TaskStatus, Actor } from './task.schemas.js';
 export type AuditLog = Readonly<{
   id: string;
   taskId: string;
-  actor: Actor;
+  userId: string;
   fromStatus: TaskStatus;
   toStatus: TaskStatus;
   changedAt: Date;

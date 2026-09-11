@@ -1,7 +1,7 @@
 import { Badge } from '@task-manager/ui/components/badge';
 import { type TaskStatus } from '@task-manager/shared-types';
 
-const STATUS_CONFIG: Record<
+export const STATUS_CONFIG: Record<
   TaskStatus,
   {
     label: string;

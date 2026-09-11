@@ -3,7 +3,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "noEmit": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "NodeNext",
     "resolvePackageJsonImports": true
   },
   "files": [],

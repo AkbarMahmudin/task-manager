@@ -2,6 +2,7 @@ import {
   AuditLog,
   CreateTaskRequest,
   Task,
+  UpdateTaskRequest,
   UpdateTaskStatusRequest,
 } from '@task-manager/shared-types';
 
@@ -16,6 +17,13 @@ export interface AuditLogDrawerProps {
 // ── CreateTaskForm ──────────────────────────────────────────────────────────
 export interface CreateTaskFormProps {
   onSubmit: (data: CreateTaskRequest) => void;
+  isSubmitting: boolean;
+}
+
+// ── UpdateTaskForm ──────────────────────────────────────────────────────────
+export interface UpdateTaskFormProps {
+  task: Task;
+  onSubmit: (taskId: string, data: UpdateTaskRequest) => void;
   isSubmitting: boolean;
 }
 
@@ -38,9 +46,11 @@ export interface TaskItemProps {
   task: Task;
   isSelected: boolean;
   onSelectTask: (taskId: string) => void;
+  onUpdate: (taskId: string, data: UpdateTaskRequest) => void;
   onUpdateStatus: (taskId: string, data: UpdateTaskStatusRequest) => void;
   onDelete: (taskId: string) => void;
   isUpdatingStatus: boolean;
+  isUpdating: boolean;
   isDeleting: boolean;
 }
 
@@ -50,17 +60,17 @@ export interface TaskListProps {
   logs?: AuditLog[];
   selectedTaskId: string | null;
   onSelectTask: (taskId: string) => void;
+  onUpdate: (taskId: string, data: UpdateTaskRequest) => void;
   onUpdateStatus: (taskId: string, data: UpdateTaskStatusRequest) => void;
   onDelete: (taskId: string) => void;
   isUpdatingStatus: boolean;
+  isUpdating: boolean;
   isDeleting: boolean;
 }
 
-// ── UpdateStatusDialog ──────────────────────────────────────────────────────────
-export interface UpdateStatusDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  task: Task;
-  onConfirm: (data: UpdateTaskStatusRequest) => void;
+// ── UpdateStatusSelect ──────────────────────────────────────────────────────────
+export interface UpdateStatusSelectProps {
+  defaultStatus: string;
+  onSelect: (data: UpdateTaskStatusRequest) => void;
   isSubmitting: boolean;
 }

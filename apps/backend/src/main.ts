@@ -5,6 +5,9 @@ import { createTaskModule } from './modules/task/task.module';
 import { errorHandlerMiddleware } from './shared/middlewares/error-handler.middleware';
 import { createAuditLogModule } from './modules/audit-log/audit-log.module';
 import cors from 'cors';
+import { createDbClient } from './db/db.module';
+import { createUserModule } from './modules/user/audit-log.module';
+import { createAuthModule } from './modules/auth/auth.module';
 
 const app = express();
 
@@ -19,13 +22,22 @@ app.get('/health', (_req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
+const dbClient = createDbClient();
+
 // ── Module Registration ──────────────────────────────────────────────
-const auditLogModule = createAuditLogModule();
+const auditLogModule = createAuditLogModule({ dbClient });
+const userModule = createUserModule({ dbClient });
 
 const taskModule = createTaskModule({
   auditLogClient: auditLogModule.client,
+  dbClient,
 });
 app.use('/api/tasks', taskModule.router);
+
+const authModule = createAuthModule({
+  userClient: userModule.client,
+});
+app.use('/api/auth', authModule.router);
 
 // ── Error Handler ────────────────────────────────────────────────────
 app.use(errorHandlerMiddleware);

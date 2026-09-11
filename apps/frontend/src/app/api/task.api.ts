@@ -4,13 +4,14 @@ import type {
   CreateTaskRequest,
   UpdateTaskStatusRequest,
   ApiResponse,
+  UpdateTaskRequest,
 } from '@task-manager/shared-types';
 import { apiClient } from './client';
 
 export const taskApi = {
   getAll: async (): Promise<Task[]> => {
     const res = await apiClient.get<ApiResponse<Task[]>>('/tasks');
-    return res.data.data;
+    return res.data?.data ?? [];
   },
 
   getById: async (taskId: string): Promise<Task> => {
@@ -20,6 +21,14 @@ export const taskApi = {
 
   create: async (data: CreateTaskRequest): Promise<Task> => {
     const res = await apiClient.post<ApiResponse<Task>>('/tasks', data);
+    return res.data.data;
+  },
+
+  update: async (taskId: string, data: UpdateTaskRequest): Promise<Task> => {
+    const res = await apiClient.patch<ApiResponse<Task>>(
+      `/tasks/${taskId}`,
+      data,
+    );
     return res.data.data;
   },
 
@@ -40,7 +49,7 @@ export const taskApi = {
 
   getAuditLogs: async (taskId: string): Promise<AuditLog[]> => {
     const res = await apiClient.get<ApiResponse<AuditLog[]>>(
-      `/tasks/${taskId}/audit-logs`,
+      `/tasks/${taskId}/logs`,
     );
     return res.data.data;
   },

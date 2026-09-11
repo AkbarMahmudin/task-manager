@@ -4,7 +4,7 @@ import type { ApiError } from '@task-manager/shared-types';
 
 export function validateBody<T>(schema: ZodSchema<T>) {
   return (req: Request, res: Response, next: NextFunction): void => {
-    const result = schema.safeParse(req.body);
+    const result = schema.safeParse(req?.body);
 
     if (!result.success) {
       const errorMessages = formatZodError(result.error);

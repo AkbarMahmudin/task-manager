@@ -4,4 +4,4 @@ export * from './components/CreateTaskForm';
 export * from './components/AuditLogDrawer';
 export * from './components/TaskItem';
 export * from './components/TaskStatusBadge';
-export * from './components/UpdateStatusDialog';
+export * from './components/UpdateStatusSelect';
