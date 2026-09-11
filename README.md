@@ -205,6 +205,8 @@ curl http://localhost:3000/api/tasks \
 
 Di frontend, token disimpan otomatis di `localStorage` (key `auth_token`) setelah login berhasil, dan dilampirkan otomatis ke setiap request lewat Axios interceptor. Route task (`/`) dilindungi oleh `ProtectedRoute` — akan redirect ke `/login` jika belum ada token.
 
+Password boleh sepanjang 1–16 karakter (aturan ini sudah konsisten antara skema register dan login).
+
 ---
 
 ## Arsitektur
@@ -279,20 +281,39 @@ Task module dan AuditLog module berkomunikasi melalui pola **Port & Adapter**: `
 
 Semua operasi task (`getTaskById`, `updateTask`, `updateTaskStatus`, `deleteTask`, `getAuditLogs`) melewati `getTaskById(taskId, userId)` sebagai single source of truth untuk validasi kepemilikan — melempar `403 FORBIDDEN` jika `userId` yang login tidak cocok dengan `task.userId`.
 
+### Status Task — 4 Tahap (Enhancement dari Requirement)
+
+Requirement awal hanya meminta 2 status (`TODO`/`DONE`), namun diimplementasikan dengan 4 tahap yang lebih ekspresif untuk merepresentasikan progres kerja secara lebih realistis:
+
+```
+to_do → pending → in_progress → done
+```
+
+Perubahan status dilakukan lewat dropdown/select di UI (`UpdateStatusSelect`), sehingga user bebas memilih status tujuan secara langsung tanpa dibatasi harus berurutan selangkah demi selangkah. Pendekatan ini disengaja untuk memberi fleksibilitas ke user (misal: task yang salah diklik "in_progress" bisa langsung dikembalikan ke "to_do" tanpa harus melalui status lain).
+
 ---
 
 ## Bonus yang Diimplementasikan
 
-| Fitur                        |              Status               |
-| ---------------------------- | :-------------------------------: |
-| Pagination                   | ✅ (backend + API layer frontend) |
-| Search Task                  | ✅ (backend + API layer frontend) |
-| ESLint + Prettier            |                ✅                 |
-| Responsive Layout (Tailwind) |                ✅                 |
-| Unit Test                    |             ❌ Belum              |
-| Swagger / OpenAPI            |             ❌ Belum              |
-| GitHub Actions               |             ❌ Belum              |
-| Dark Mode                    |                ✅                 |
+| Fitur             |                                     Status                                     |
+| ----------------- | :----------------------------------------------------------------------------: |
+| Pagination        | ✅ Lengkap — backend, API layer, dan kontrol UI (Previous/Next + info halaman) |
+| Search Task       |     ✅ Lengkap — backend, API layer, dan search box di UI dengan debounce      |
+| ESLint + Prettier |                                       ✅                                       |
+| Responsive Layout |                  ✅ Sudah cukup aman di berbagai ukuran layar                  |
+| Dark Mode         |                            ✅ Berjalan dengan baik                             |
+| Unit Test         |                                    ❌ Belum                                    |
+| Swagger / OpenAPI |                                    ❌ Belum                                    |
+| GitHub Actions    |                                    ❌ Belum                                    |
+
+---
+
+## Known Limitations (Didokumentasikan Sengaja)
+
+Bagian ini didokumentasikan secara jujur untuk transparansi ke reviewer/interviewer:
+
+1. **Update status task dan pencatatan audit log belum berada dalam satu database transaction.** `IDbClient` sudah menyediakan method `transaction()`, tapi `updateTaskStatus` di `TaskService` belum memakainya — `repo.update()` dan `auditLogClient.recordStatusChange()` masih berupa dua call terpisah. Jika salah satu gagal di tengah jalan, task dan audit log-nya bisa inconsistent. **Ini bukan bagian dari requirement wajib** (audit log adalah fitur tambahan di luar soal), sehingga diprioritaskan sebagai **TODO enhancement** jika waktu pengerjaan masih tersedia — bukan blocker untuk submission.
+2. **Kontrol UI untuk search & pagination belum tersedia**, meskipun kapabilitasnya sudah lengkap di backend dan API layer frontend (`taskApi.getAll({ page, limit, search })`). `TaskPage.tsx` saat ini memanggil `useTasks()` tanpa parameter filter. Enhancement UI (search box + pagination control) direncanakan setelah pengiriman.
 
 ---
 
@@ -304,20 +325,26 @@ Semua operasi task (`getTaskById`, `updateTask`, `updateTaskStatus`, `deleteTask
 
 **Developer Experience**
 
-- Unit test untuk `TaskService` (ownership check, transisi status, idempotency)
+- Unit test untuk `TaskService` (ownership check, business logic status update)
 - Integration test tiap endpoint dengan supertest
 - OpenAPI/Swagger dari Zod schema
 
 **Frontend**
 
-- Tambahkan search input & pagination control yang terhubung ke `useTasks(filter)`
+- Tambahkan search input & pagination control yang terhubung ke `useTasks(filter)` (enhancement pasca-pengiriman)
 - Toast notification untuk feedback sukses/gagal
-- Dark mode toggle
 
 **Observability**
 
 - Structured logging (JSON, level info/warn/error)
 - Request ID untuk traceability
+
+---
+
+## Pengumpulan
+
+- Repository: https://github.com/AkbarMahmudin/task-manager
+- Postman Collection: `<isi link Postman Collection di sini>`
 
 ---
 
