@@ -16,20 +16,20 @@ Aplikasi Task Management dengan autentikasi JWT dan audit log perubahan status y
 
 ## Tech Stack
 
-| Layer            | Technology                                                     |
-| ---------------- | -------------------------------------------------------------- |
-| Monorepo         | NX                                                             |
-| Backend          | Node.js + Express + TypeScript                                 |
-| Database         | PostgreSQL                                                     |
-| ORM / Migration  | Drizzle ORM + drizzle-kit                                      |
-| Auth             | JWT (`jsonwebtoken`) + `bcrypt` untuk hashing password         |
-| Frontend         | React + TypeScript + Vite                                      |
-| UI Framework     | Tailwind CSS v4 + shadcn/ui                                    |
-| Server State     | TanStack React Query v5                                        |
-| HTTP Client      | Axios                                                          |
-| Routing          | React Router v6 (Protected Route + Guest-only Route)           |
-| Validation       | Zod — shared antara FE dan BE via `@task-manager/shared-types` |
-| Containerization | Docker & Docker Compose                                        |
+| Layer            | Technology                                                    |
+| ---------------- | ------------------------------------------------------------- |
+| Monorepo         | NX                                                            |
+| Backend          | Node.js + Express + TypeScript                                |
+| Database         | PostgreSQL                                                    |
+| ORM / Migration  | Drizzle ORM + drizzle-kit                                     |
+| Auth             | JWT (`jsonwebtoken`) + `bcrypt` untuk hashing password        |
+| Frontend         | React + TypeScript + Vite                                     |
+| UI Framework     | Tailwind CSS v4 + shadcn/ui                                   |
+| Server State     | TanStack React Query v5                                       |
+| HTTP Client      | Axios                                                         |
+| Routing          | React Router v6 (Protected Route + Guest-only Route)          |
+| Validation       | Zod — shared antara FE dan BE via`@task-manager/shared-types` |
+| Containerization | Docker & Docker Compose                                       |
 
 ---
 
@@ -158,21 +158,21 @@ Base URL: `http://localhost:3000/api`
 
 Semua endpoint task membutuhkan header `Authorization: Bearer <token>`.
 
-| Method | Endpoint            | Deskripsi                                                             |
-| ------ | ------------------- | --------------------------------------------------------------------- |
-| GET    | `/tasks`            | List task milik user. Query param opsional: `page`, `limit`, `search` |
-| GET    | `/tasks/:id`        | Detail satu task (hanya milik sendiri)                                |
-| POST   | `/tasks`            | Buat task baru                                                        |
-| PATCH  | `/tasks/:id`        | Update title/description task                                         |
-| PATCH  | `/tasks/:id/status` | Update status task                                                    |
-| DELETE | `/tasks/:id`        | Hapus task                                                            |
-| GET    | `/tasks/:id/logs`   | List audit log perubahan status untuk task tsb                        |
+| Method | Endpoint            | Deskripsi                                                            |
+| ------ | ------------------- | -------------------------------------------------------------------- |
+| GET    | `/tasks`            | List task milik user. Query param opsional:`page`, `limit`, `search` |
+| GET    | `/tasks/:id`        | Detail satu task (hanya milik sendiri)                               |
+| POST   | `/tasks`            | Buat task baru                                                       |
+| PATCH  | `/tasks/:id`        | Update title/description task                                        |
+| PATCH  | `/tasks/:id/status` | Update status task                                                   |
+| DELETE | `/tasks/:id`        | Hapus task                                                           |
+| GET    | `/tasks/:id/logs`   | List audit log perubahan status untuk task tsb                       |
 
 ### Lainnya
 
-| Method | Endpoint  | Deskripsi                                                                                  |
-| ------ | --------- | ------------------------------------------------------------------------------------------ |
-| GET    | `/health` | Health check server (di luar prefix `/api`, akses langsung `http://localhost:3000/health`) |
+| Method | Endpoint  | Deskripsi                                                                                 |
+| ------ | --------- | ----------------------------------------------------------------------------------------- |
+| GET    | `/health` | Health check server (di luar prefix`/api`, akses langsung `http://localhost:3000/health`) |
 
 ---
 
@@ -344,7 +344,7 @@ Bagian ini didokumentasikan secara jujur untuk transparansi ke reviewer/intervie
 ## Pengumpulan
 
 - Repository: https://github.com/AkbarMahmudin/task-manager
-- Postman Collection: `<isi link Postman Collection di sini>`
+- Postman Collection: [postman-collection.json](postman-collection.json)
 
 ---
 
