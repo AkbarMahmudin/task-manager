@@ -10,7 +10,7 @@ export const authSchema = z.object({
   password: z
     .string({ message: 'Password is required' })
     .min(1, 'Password cannot be empty')
-    .max(16, 'Password cannot exceed 8 characters'),
+    .max(16, 'Password cannot exceed 16 characters'),
 });
 
 /**
