@@ -112,19 +112,6 @@ export class TaskService implements ITaskService {
     return this.auditLogClient.getLogsForTask(taskId);
   }
 
-  private validateTransition(from: Task['status'], to: Task['status']): void {
-    const fromIndex = TASK_STATUS_ORDER.indexOf(from as any);
-    const toIndex = TASK_STATUS_ORDER.indexOf(to as any);
-
-    if (toIndex !== fromIndex + 1) {
-      throw new DomainError(
-        `Invalid transition: "${from}" → "${to}". ` +
-          `Must follow order: ${TASK_STATUS_ORDER.join(' → ')}`,
-        'INVALID_TRANSITION',
-      );
-    }
-  }
-
   private buildLogDescription(
     taskTitle: string,
     from: Task['status'],

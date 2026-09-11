@@ -1,8 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useLogin, useRegister } from '../hooks/use-auth';
+import { useRegister } from '../hooks/use-auth';
 import {
-  AuthUserRequest,
-  authUserSchema,
   CreateUserRequest,
   createUserSchema,
 } from '@task-manager/shared-types';

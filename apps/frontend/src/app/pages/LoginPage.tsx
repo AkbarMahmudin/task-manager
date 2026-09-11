@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLogin } from '../hooks/use-auth';
-import { AuthUserRequest, authUserSchema } from '@task-manager/shared-types';
+import { AuthRequest, authSchema } from '@task-manager/shared-types';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -18,8 +18,8 @@ export const LoginPage = () => {
   const location = useLocation();
   const loginMutation = useLogin();
 
-  const form = useForm<AuthUserRequest>({
-    resolver: zodResolver(authUserSchema),
+  const form = useForm<AuthRequest>({
+    resolver: zodResolver(authSchema),
   });
 
   const onSubmit = form.handleSubmit((values) => {

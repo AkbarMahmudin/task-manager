@@ -42,20 +42,8 @@ export const updateUserSchema = z.object({
   password: z
     .string({ message: 'Password is required' })
     .min(1, 'Password cannot be empty')
-    .max(8, 'Password cannot exceed 8 characters')
+    .max(16, 'Password cannot exceed 8 characters')
     .optional(),
-});
-
-export const authUserSchema = z.object({
-  email: z
-    .string({ message: 'Email is required' })
-    .email({ message: 'Email invalid format' })
-    .min(1, 'Email cannot be empty')
-    .max(255, 'Email cannot exceed 255 characters'),
-  password: z
-    .string({ message: 'Password is required' })
-    .min(1, 'Password cannot be empty')
-    .max(8, 'Password cannot exceed 8 characters'),
 });
 
 /**
@@ -64,4 +52,3 @@ export const authUserSchema = z.object({
 export type User = z.infer<typeof userSchema>;
 export type CreateUserRequest = z.infer<typeof createUserSchema>;
 export type UpdateUserRequest = z.infer<typeof updateUserSchema>;
-export type AuthUserRequest = z.infer<typeof authUserSchema>;
